@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#5A4BE8">
+<title>Scratchito · Estudio de programación con bloques</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%235A4BE8'/%3E%3Cg fill='white'%3E%3Crect x='4.5' y='5' width='6.4' height='5.4' rx='1.4'/%3E%3Crect x='13.1' y='5' width='6.4' height='5.4' rx='1.4'/%3E%3Crect x='4.5' y='13.6' width='6.4' height='5.4' rx='1.4'/%3E%3Crect x='13.1' y='13.6' width='6.4' height='5.4' rx='1.4'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="stylesheet" href="icons.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-view="stage" data-pane="palette">
+<div id="app">
+
+  <!-- ===== Barra superior ===== -->
+  <header class="topbar">
+    <div class="logo"><span class="cat"><span class="ic ic-bricks"></span></span><span class="t">Scratchito</span></div>
+    <input class="projname" id="projName" placeholder="Mi proyecto" value="Mi proyecto">
+    <div class="sep"></div>
+    <button class="tbtn primary" id="btnTut"><span class="ic ic-book"></span><span class="t">Tutorial</span></button>
+    <button class="tbtn" id="btnEjemplos"><span class="ic ic-game"></span><span class="t">Ejemplos</span></button>
+    <div class="sep"></div>
+    <button class="tbtn" id="btnNew"><span class="ic ic-sparkle"></span><span class="t">Nuevo</span></button>
+    <button class="tbtn" id="btnSave"><span class="ic ic-save"></span><span class="t">Guardar</span></button>
+    <button class="tbtn" id="btnLoad"><span class="ic ic-folder"></span><span class="t">Abrir</span></button>
+    <input type="file" id="fileIn" accept=".json" class="hidden">
+    <div class="spacer"></div>
+    <button class="tbtn" id="btnFull"><span class="ic ic-expand"></span><span class="t">Pantalla completa</span></button>
+  </header>
+
+  <!-- Barra de ejecución fija (solo móvil) -->
+  <div class="runbar" id="runbar">
+    <button class="runbtn run-go" id="mFlag" title="Ejecutar"><span class="ic ic-flag"></span></button>
+    <button class="runbtn run-stop" id="mStop" title="Detener"><span class="ic ic-stop"></span></button>
+    <span class="rb-name" id="mName">Mi proyecto</span>
+    <button class="rb-menu" id="mMenu" title="Más opciones"><span class="ic ic-dots"></span></button>
+  </div>
+
+  <div class="main">
+
+    <!-- ===== Editor: rail + paleta + lienzo ===== -->
+    <section class="editor">
+      <div class="codeswitch">
+        <button data-pane="palette" class="on"><span class="ic ic-bricks"></span> Bloques</button>
+        <button data-pane="canvas"><span class="ic ic-script"></span> Mi código <span id="blkCount"></span></button>
+      </div>
+      <nav class="cats" id="cats"></nav>
+      <div class="palette" id="palette"></div>
+      <div class="canvas-wrap">
+        <div id="canvas"><div id="scriptLayer"></div></div>
+        <div class="canvas-hint" id="canvasHint">Arrastra bloques aquí para crear tu programa</div>
+        <button class="trash" id="trash" title="Arrastra un bloque aquí para borrarlo"><span class="ic ic-trash ic-xl"></span></button>
+        <div class="canvas-tools">
+          <button class="ctool" id="zin" title="Acercar"><span class="ic ic-plus"></span></button>
+          <button class="ctool" id="zreset" title="Tamaño normal"><span class="ic ic-target"></span></button>
+          <button class="ctool" id="zout" title="Alejar"><span class="ic ic-minus"></span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Escenario + paneles ===== -->
+    <aside class="stage-col">
+
+      <div class="stage-card-main">
+        <div class="stage-head">
+          <button class="runbtn run-go" id="flag" title="Ejecutar (bandera verde)"><span class="ic ic-flag"></span></button>
+          <button class="runbtn run-stop" id="stopb" title="Detener todo"><span class="ic ic-stop"></span></button>
+          <span class="stage-title">Escenario</span>
+          <div class="size-btns">
+            <button data-mode="small" title="Pequeño"><span class="ic ic-sq-s"></span></button>
+            <button data-mode="normal" class="active" title="Normal"><span class="ic ic-sq-m"></span></button>
+            <button data-mode="big" title="Grande"><span class="ic ic-sq-l"></span></button>
+          </div>
+        </div>
+        <div class="stage-holder">
+          <div id="stage">
+            <img id="stageBg" alt="">
+            <canvas id="penLayer" width="480" height="360"></canvas>
+            <div id="askBox"><input id="askInput" placeholder="Escribe tu respuesta..."><button id="askOk"><span class="ic ic-check"></span></button></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="right-stack">
+
+        <div class="card" style="flex:0 1 auto;max-height:238px">
+          <div class="tabs">
+            <button class="tab active" data-tab="costumes"><span class="ic ic-shirt"></span> Disfraces</button>
+            <button class="tab" data-tab="sounds"><span class="ic ic-speaker"></span> Sonidos</button>
+          </div>
+          <div id="assetsPane"></div>
+        </div>
+
+        <div class="card sprite-panel" style="flex:1 1 auto">
+          <div class="sprite-list-wrap">
+            <div class="sp-info">
+              <label class="sp-field">Objeto <input id="fName" class="name"></label>
+              <label class="sp-field">x <input id="fX" inputmode="numeric"></label>
+              <label class="sp-field">y <input id="fY" inputmode="numeric"></label>
+              <label class="sp-field">Tam <input id="fSize" inputmode="numeric"></label>
+              <label class="sp-field">Dir <input id="fDir" inputmode="numeric"></label>
+              <button id="fShow" title="Mostrar / ocultar"><span class="ic ic-eye"></span></button>
+            </div>
+            <div class="sprite-list" id="spriteList"></div>
+            <button class="addbtn" id="addSprite" title="Añadir personaje"><span class="ic ic-user-plus ic-xl"></span></button>
+          </div>
+          <div class="stage-card">
+            <img class="thumb" id="stageThumb" alt="">
+            Fondo
+            <button class="minibtn accent" id="addBackdrop" style="margin-top:8px;width:100%"><span class="ic ic-image"></span></button>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+  </div>
+
+  <!-- ===== Barra inferior móvil ===== -->
+  <nav class="mobile-tabs">
+    <button data-view="stage"><span class="ic ic-stage ic-xl"></span>Escenario</button>
+    <button data-view="code"><span class="ic ic-bricks ic-xl"></span>Código</button>
+    <button data-view="assets"><span class="ic ic-shirt ic-xl"></span>Recursos</button>
+  </nav>
+  <button class="fab-swap" id="fabSwap" title="Cambiar entre bloques y código"><span class="ic ic-script"></span></button>
+</div>
+
+<!-- ===== Tutorial ===== -->
+<div id="tutorial">
+  <header><span class="ic ic-book"></span> Tutorial guiado <button class="x" id="tutClose"><span class="ic ic-close"></span></button></header>
+  <div id="tutStep"></div>
+  <div id="tutFoot">
+    <span class="prog" id="tutProg"></span>
+    <div style="flex:1"></div>
+    <button class="ghost" id="tutPrev">◀</button>
+    <button id="tutNext">Siguiente ▶</button>
+  </div>
+</div>
+
+<!-- ===== Modal selector ===== -->
+<div class="modal-bg" id="picker">
+  <div class="modal">
+    <header><span id="pickerTitle">Elegir</span><button class="x" id="pickerClose"><span class="ic ic-close"></span></button></header>
+    <div class="body" id="pickerBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="assets.js"></script>
+<script src="library.js"></script>
+<script src="blocks.js"></script>
+<script src="app.js"></script>
+<script src="tutorial.js"></script>
+</body>
+</html>
