@@ -1,4 +1,8 @@
-# Scratchito
+<p align="center">
+  <img src="logo.png" width="120" alt="Scratchito">
+</p>
+
+<h1 align="center">Scratchito</h1>
 
 Una réplica de Scratch 3.0 en español, pensada para ser **más entendible** que el original y funcionar igual de bien en **móvil y ordenador**.
 
@@ -26,6 +30,7 @@ Las fuentes están separadas y se empaquetan en el `index.html` final:
 | Archivo | Contenido |
 |---|---|
 | `src.html` | Estructura HTML |
+| `logo.png` | Logo (512 px); `logo-192.png` y `favicon-32.png` se incrustan en el build |
 | `icons.css` | Sistema de 56 iconos CSS |
 | `styles.css` | Estilos, tema y diseño responsive |
 | `assets.js` | Helpers SVG y recursos base |

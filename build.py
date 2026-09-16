@@ -10,6 +10,14 @@ js = '\n'.join((d / f).read_text(encoding='utf-8')
 
 out = src.replace('<link rel="stylesheet" href="icons.css">\n<link rel="stylesheet" href="styles.css">',
                   '<style>\n' + css + '\n</style>')
+
+# Logo incrustado en base64 (el entregable no puede depender de archivos externos)
+import base64
+def datauri(name):
+    return 'data:image/png;base64,' + base64.b64encode((d / name).read_bytes()).decode()
+logo192 = datauri('logo-192.png')
+out = out.replace('__LOGO192__', logo192)
+out = out.replace('__LOGO64__', datauri('favicon-32.png'))
 out = re.sub(r'\s*<script src="(assets|library|blocks|app|tutorial)\.js"></script>', '', out)
 out = out.replace('</body>', '<script>\n' + js + '\n</script>\n</body>')
 
