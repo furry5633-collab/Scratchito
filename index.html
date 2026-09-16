@@ -902,12 +902,12 @@ body.modal-open{overflow:hidden}
 .assets-card{flex:1 1 40%;min-height:120px;max-height:clamp(150px,32dvh,260px)}
 .sprite-panel{flex:1 1 60%;min-height:140px}
 
-/* El "+" de fondos se queda pegado abajo dentro de su columna */
+/* El "+" de fondos va en flujo normal, nunca encima de la miniatura */
 .stage-card #addBackdrop{
-  position:sticky;right:auto;bottom:4px;align-self:center;margin-top:auto;
-  width:42px;height:42px;border-radius:14px;flex:0 0 42px
+  position:static;margin-top:6px;width:100%;flex:0 0 auto;
+  padding:8px 6px;border-radius:10px;display:grid;place-items:center
 }
-.stage-card #addBackdrop .ic{width:20px;height:20px}
+.stage-card #addBackdrop .ic{width:18px;height:18px}
 
 /* --- Pantallas bajas: se reparte el alto sin recortar nada --- */
 @media (min-width:901px) and (max-height:820px){
@@ -947,7 +947,7 @@ body.modal-open{overflow:hidden}
   /* La lista de objetos hace scroll en lugar de desbordar */
   .sprite-list{padding-bottom:74px}
   .stage-card{overflow-y:auto}
-  .stage-card #addBackdrop{width:40px;height:40px;flex-basis:40px}
+  
 }
 
 /* Móviles bajos (≤700 px de alto): se compacta todo */
@@ -1070,6 +1070,79 @@ body.modal-open{overflow:hidden}
   .asset-row .acts .minibtn{flex:1;text-align:center;padding:9px 6px}
 }
 
+/* --- Columna de fondo: miniatura, etiqueta y botón apilados sin solaparse --- */
+.stage-card{
+  display:flex;flex-direction:column;align-items:stretch;gap:0;
+  padding:10px 8px;overflow-y:auto;min-height:0
+}
+.stage-card .thumb{width:100%;flex:0 0 auto;margin-bottom:4px}
+.stage-card .sc-lbl{display:block;font-size:11px;font-weight:700;color:var(--ink-3);line-height:1.2;margin-bottom:2px}
+
+/* --- Columna de fondo compacta: miniatura + botón siempre visibles --- */
+.stage-card{width:104px;flex:0 0 104px;padding:8px 7px 10px}
+.stage-card .thumb{aspect-ratio:4/3;margin-bottom:3px}
+.stage-card .sc-lbl{font-size:10.5px;margin-bottom:4px}
+.stage-card #addBackdrop{margin-top:0;padding:9px 6px;font-size:11.5px}
+
+/* El botón + de objetos no se sienta encima de la tarjeta de fondo */
+.sprite-list-wrap .addbtn{right:10px;bottom:10px}
+
+/* --- Paleta: los bloques largos no se recortan, se ajustan --- */
+/* Paleta: bloques largos accesibles con scroll horizontal suave */
+.palette{overflow-x:auto;scrollbar-width:thin}
+.palette .blockrow{width:max-content;min-width:100%}
+.palette select.bfield{max-width:160px;text-overflow:ellipsis}
+
+/* La fila de datos del objeto nunca queda bajo la tarjeta de fondo */
+@media (max-width:900px){
+  .sprite-panel{position:relative;align-items:stretch}
+  .sp-info{flex-wrap:wrap;row-gap:6px}
+  body[data-view=assets] .sprite-panel{max-height:190px}
+  body[data-view=assets] .stage-card{align-self:stretch}
+}
+
+/* --- Tarjeta de fondo: todo cabe sin scroll ni recortes --- */
+.stage-card{
+  width:104px;flex:0 0 104px;padding:8px 7px;overflow:visible;
+  display:flex;flex-direction:column;justify-content:flex-start
+}
+.stage-card .thumb{width:100%;aspect-ratio:4/3;flex:0 0 auto;margin-bottom:3px}
+.stage-card .sc-lbl{flex:0 0 auto}
+.stage-card #addBackdrop{flex:0 0 auto;margin-top:4px;padding:8px 4px}
+/* si el alto aprieta, la miniatura cede antes que el botón */
+@media (max-height:760px){
+  .stage-card .thumb{aspect-ratio:16/10}
+}
+@media (max-height:660px){
+  .stage-card{width:94px;flex-basis:94px;padding:7px 6px}
+  .stage-card .thumb{aspect-ratio:16/9}
+  .stage-card .sc-lbl{font-size:10px;margin-bottom:2px}
+  .stage-card #addBackdrop{padding:7px 4px;font-size:11px}
+}
+
+/* --- El panel inferior reserva el alto que su contenido necesita --- */
+@media (min-width:901px){
+  .sprite-panel{min-height:176px}
+  .assets-card{flex:0 1 auto;max-height:clamp(120px,26dvh,220px)}
+  /* la tarjeta de fondo se ajusta al panel, sin desbordarlo */
+  .stage-card{max-height:100%;overflow:hidden}
+  .stage-card .thumb{min-height:0}
+}
+@media (min-width:901px) and (max-height:700px){
+  .sprite-panel{min-height:158px}
+  .assets-card{max-height:clamp(110px,20dvh,160px)}
+}
+
+/* --- Tarjeta de fondo: la miniatura cede, el botón SIEMPRE se ve --- */
+.stage-card{justify-content:flex-start;gap:3px}
+.stage-card .thumb{
+  aspect-ratio:auto;height:auto;max-height:58px;object-fit:cover;flex:0 1 auto;min-height:26px
+}
+.stage-card .sc-lbl{flex:0 0 auto;margin:0}
+.stage-card #addBackdrop{margin-top:auto;flex:0 0 auto}
+@media (max-height:700px){ .stage-card .thumb{max-height:44px} }
+@media (max-height:620px){ .stage-card .thumb{max-height:34px} }
+
 </style>
 </head>
 <body data-view="stage" data-pane="palette">
@@ -1169,8 +1242,8 @@ body.modal-open{overflow:hidden}
           </div>
           <div class="stage-card">
             <img class="thumb" id="stageThumb" alt="">
-            Fondo
-            <button class="minibtn accent" id="addBackdrop" style="margin-top:8px;width:100%"><span class="ic ic-image"></span></button>
+            <span class="sc-lbl">Fondo</span>
+            <button class="minibtn accent" id="addBackdrop" title="Elegir fondo"><span class="ic ic-image"></span></button>
           </div>
         </div>
 
